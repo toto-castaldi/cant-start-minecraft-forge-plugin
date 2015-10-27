@@ -54,9 +54,8 @@ public class ExternalSemaphore implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("check semaphore");
 
-            String url = "http://www.google.com/search?q=toto";
+            String url = "http://default-environment-7drtpyd2a7.elasticbeanstalk.com/semaphore";
 
             URL obj = null;
             try {
@@ -66,30 +65,26 @@ public class ExternalSemaphore implements Runnable {
                 con.setRequestProperty("User-Agent", USER_AGENT);
 
                 int responseCode = con.getResponseCode();
-                System.out.println("\nSending 'GET' request to URL : " + url);
-                System.out.println("Response Code : " + responseCode);
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+                if (responseCode == 200) {
+	                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	                String inputLine;
+	                StringBuffer response = new StringBuffer();
+	
+	                while ((inputLine = in.readLine()) != null) {
+	                    response.append(inputLine);
+	                }
+	                in.close();
+	
+	                this.off = response.toString().contains("false");
+                } else {
+                	this.off = false;
                 }
-                in.close();
-
-                System.out.println(response.toString());
-
-                off = response.toString().contains("OFF");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (Exception e) {
+            	this.off = false;
                 e.printStackTrace();
             }
-
         }
+        this.off = false;
     }
 
     public boolean isOff() {
