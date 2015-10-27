@@ -1,0 +1,7 @@
+name: CantPlayPlugin
+
+author: Toto Castaldi
+website: https://github.com/toto-castaldi
+main: net.mastercoder.minecraftPlugin.ServerCantPlay
+
+version: 0.1
