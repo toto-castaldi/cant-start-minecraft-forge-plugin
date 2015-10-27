@@ -12,10 +12,18 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 public class EventsHandler {
 
+	private final ExternalSemaphore externalSemaphore;
+
+	public EventsHandler() {
+		externalSemaphore = ExternalSemaphore.getInstance();
+	}
+
 	@SubscribeEvent
 	public void interact(PlayerInteractEvent event) {
-		event.entityPlayer.setGameType(GameType.SURVIVAL);
-		event.entityPlayer.setHealth(-1);
+		if (externalSemaphore.isOff()) {
+			event.entityPlayer.setGameType(GameType.SURVIVAL);
+			event.entityPlayer.setHealth(-1);
+		}
 	}
 	
 }
