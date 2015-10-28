@@ -18,6 +18,7 @@ public class ExternalSemaphore implements Runnable {
     private boolean live;
     private Thread thread;
     private final String USER_AGENT = "Mozilla/5.0";
+    private final long sleepTime = 20000;
     private boolean off;
 
     private ExternalSemaphore() {
@@ -50,7 +51,7 @@ public class ExternalSemaphore implements Runnable {
     public void run() {
         while (live) {
             try {
-                Thread.sleep(3000);
+                Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

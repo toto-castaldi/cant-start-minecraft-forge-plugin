@@ -49,6 +49,15 @@ public class SemaphoreResource {
         return apiResponse.createdReturns(httpServletRequest, ApiPath.SEMAPHORE);
     }
 
+    @POST
+    @Path(ApiPath.SWITCH)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response switchState(@Context HttpServletRequest httpServletRequest) {
+        semaphore.switchState();
+        return apiResponse.createdReturns(httpServletRequest, ApiPath.SEMAPHORE);
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

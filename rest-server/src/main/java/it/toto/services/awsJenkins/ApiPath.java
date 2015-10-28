@@ -10,5 +10,6 @@ public class ApiPath {
     public static final String SEMAPHORE = "semaphore";
     public static final String ON = "on";
     public static final String OFF = "off";
+    public static final String SWITCH = "switch";
 
 }

@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 @Slf4j
 public class Semaphore {
 
-    private boolean status = false;
+    private boolean status = true;
 
     @Inject
     public Semaphore(
@@ -29,5 +29,9 @@ public class Semaphore {
 
     public boolean status() {
         return status;
+    }
+
+    public void switchState() {
+        this.status = !this.status;
     }
 }
