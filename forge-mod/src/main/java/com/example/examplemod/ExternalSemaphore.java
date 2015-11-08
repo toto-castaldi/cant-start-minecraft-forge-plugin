@@ -82,9 +82,15 @@ public class ExternalSemaphore implements Runnable {
                 } else {
                 	this.off = false;
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
+                System.out.println("error on semaphore");
             	this.off = false;
-                e.printStackTrace();
+                Throwable t = e;
+                while (t != null) {
+                    System.out.println("error :" + t.getMessage());
+                    t.printStackTrace();
+                    t = t.getCause();
+                }
             }
         }
         this.off = false;
