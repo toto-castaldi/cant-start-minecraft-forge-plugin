@@ -1,5 +1,9 @@
 package com.example.examplemod;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,27 +60,25 @@ public class ExternalSemaphore implements Runnable {
                 e.printStackTrace();
             }
 
-            String url = "http://default-environment-7drtpyd2a7.elasticbeanstalk.com/semaphore";
+            System.out.println("Check semaphore");
 
-            URL obj = null;
+
             try {
-                obj = new URL(url);
-                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-                con.setRequestMethod("GET");
-                con.setRequestProperty("User-Agent", USER_AGENT);
 
-                int responseCode = con.getResponseCode();
+                HttpResponse<JsonNode> response = Unirest.get("https://toto-execute-your-hooks-v1.p.mashape.com/semaphore")
+                        .header("Authorization", "Basic c3RvcC1wbGF5LW1pbmVjcmFmdDpyMkhuUEhmbQ==")
+                        .header("X-Mashape-Key", "FCKFcesv9PmshjpunUVhQVx88GI7p1HDYROjsnTmJ45NAYWEnd")
+                        .header("Accept", "application/json")
+                        .asJson();
+
+                int responseCode = response.getStatus();
+
+                System.out.println("response status" + response.getStatus());
+                System.out.println("response body" + response.getBody().toString());
+
                 if (responseCode == 200) {
-	                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	                String inputLine;
-	                StringBuffer response = new StringBuffer();
-	
-	                while ((inputLine = in.readLine()) != null) {
-	                    response.append(inputLine);
-	                }
-	                in.close();
-	
-	                this.off = response.toString().contains("false");
+
+                    this.off = response.getBody().getObject().getBoolean("status") == false;
                 } else {
                 	this.off = false;
                 }
