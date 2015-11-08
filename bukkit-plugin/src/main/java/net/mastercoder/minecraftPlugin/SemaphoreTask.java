@@ -1,12 +1,10 @@
 package net.mastercoder.minecraftPlugin;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Created by goto10 on 27/10/2015.
@@ -20,26 +18,24 @@ public class SemaphoreTask extends BukkitRunnable {
     }
 
     public void run() {
+
+        //System.out.println("check semaphore");
+
         try {
-            String url = "http://default-environment-7drtpyd2a7.elasticbeanstalk.com/semaphore";
+            HttpResponse<JsonNode> response = Unirest.get("https://toto-execute-your-hooks-v1.p.mashape.com/semaphore")
+                    .header("Authorization", "Basic c3RvcC1wbGF5LW1pbmVjcmFmdDpyMkhuUEhmbQ==")
+                    .header("X-Mashape-Key", "FCKFcesv9PmshjpunUVhQVx88GI7p1HDYROjsnTmJ45NAYWEnd")
+                    .header("Accept", "application/json")
+                    .asJson();
 
-            URL obj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("User-Agent", "Mozilla/5.0");
+            int responseCode = response.getStatus();
 
-            int responseCode = con.getResponseCode();
+            //System.out.println("response status" + response.getStatus());
+            //System.out.println("response body" + response.getBody().toString());
+
             if (responseCode == 200) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
 
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                if (response.toString().contains("false")) {
+                if (response.getBody().getObject().getBoolean("status") == false) {
                     Player[] onlinePlayers = plugin.getServer().getOnlinePlayers();
                     for (int i = 0; i < onlinePlayers.length; i++) {
                         onlinePlayers[i].kickPlayer("Can't play now");

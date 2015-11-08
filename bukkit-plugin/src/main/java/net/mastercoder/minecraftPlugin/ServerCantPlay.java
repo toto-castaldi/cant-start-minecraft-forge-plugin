@@ -42,7 +42,7 @@ public class ServerCantPlay extends JavaPlugin {
 
         private void tryStart() {
             if (bukkitTask == null) {
-                bukkitTask = new SemaphoreTask(this.plugin).runTaskTimer(plugin, 4000, 2000);
+                bukkitTask = new SemaphoreTask(this.plugin).runTaskTimer(plugin, 400, 200 * 6); //200 = 10 secs
             }
         }
 
