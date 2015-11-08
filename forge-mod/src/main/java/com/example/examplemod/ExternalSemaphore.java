@@ -1,15 +1,8 @@
 package com.example.examplemod;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 /**
@@ -63,34 +56,39 @@ public class ExternalSemaphore implements Runnable {
             System.out.println("Check semaphore");
 
 
+            String url = "https://toto-execute-your-hooks-v1.p.mashape.com/semaphore";
+
+            URL obj = null;
+
             try {
 
-                HttpResponse<JsonNode> response = Unirest.get("https://toto-execute-your-hooks-v1.p.mashape.com/semaphore")
-                        .header("Authorization", "Basic c3RvcC1wbGF5LW1pbmVjcmFmdDpyMkhuUEhmbQ==")
-                        .header("X-Mashape-Key", "FCKFcesv9PmshjpunUVhQVx88GI7p1HDYROjsnTmJ45NAYWEnd")
-                        .header("Accept", "application/json")
-                        .asJson();
+                obj = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("GET");
+                con.setRequestProperty("Authorization", "Basic c3RvcC1wbGF5LW1pbmVjcmFmdDpyMkhuUEhmbQ==");
+                con.setRequestProperty("X-Mashape-Key", "FCKFcesv9PmshjpunUVhQVx88GI7p1HDYROjsnTmJ45NAYWEnd");
+                con.setRequestProperty("Accept", "application/json");
 
-                int responseCode = response.getStatus();
-
-                System.out.println("response status" + response.getStatus());
-                System.out.println("response body" + response.getBody().toString());
+                int responseCode = con.getResponseCode();
 
                 if (responseCode == 200) {
 
-                    this.off = response.getBody().getObject().getBoolean("status") == false;
+                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+
+                    this.off = response.toString().contains("false");
                 } else {
                 	this.off = false;
                 }
             } catch (Throwable e) {
                 System.out.println("error on semaphore");
-            	this.off = false;
-                Throwable t = e;
-                while (t != null) {
-                    System.out.println("error :" + t.getMessage());
-                    t.printStackTrace();
-                    t = t.getCause();
-                }
+                e.printStackTrace();
             }
         }
         this.off = false;
